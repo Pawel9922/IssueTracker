@@ -7,7 +7,7 @@ import {MONGODB_URI} from "./util/configuration";
 import exphbs from "express-handlebars";
 import logger from "./util/logger";
 
-import * as mainController from "./controllers/dashboard";
+import * as mainController from "./controllers/dashboardController";
 
 const app = express();
 
@@ -27,7 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", mainController.dashboard);
+app.get("/", mainController.dashboardController);
 
 app.listen(app.get("port"), () => {
     logger.debug("App is running at http://localhost:%d in %s mode", app.get("port"), app.get("env"));

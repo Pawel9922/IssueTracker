@@ -1,1 +1,7 @@
-<div>Test</div>
+<div class="dashboard">
+    {{#each issues}}
+        {{> issue}}
+    {{/each}}
+
+    <button class="add-button">+</button>
+</div>
