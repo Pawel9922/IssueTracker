@@ -10,17 +10,17 @@ Prosta aplikacja pozwalająca na dodawanie, wyświetlanie oraz edycję statusu z
 
 Uwagi: W normalnych warunkach produkcyjnych planując aplikację skalowalną i łatwą w utrzymaniu,
 front-end powinien opierać się o framework typu React bądź Angular.
-Jednak przy tych rozmiarach aplikacji zdecydowałem się nie używać żadnego frameworka, żeby nie komplikować projektu.
-Najprostrzym sposobem na wykonanie tego zadania byłoby użycie jakiegoś silnika szablonów
-i renderowanie wszystkiego po stronie serwera jednak za bardzo przypominało mi to czasy gdy pracowałem z PHP
-i do których nie chciałbym wracać :). Dlatego zdecydowałem się wybrać rozwiązanie pośrednie i przy okazji sprawdzić
-jak trudne jest tworzenie aplikacji SPA przy wykorzystaniu natywnych WebComponentów. Jako, że symuluję tutaj działanie 
-frameworka to z serwera podaję tylko prosty widok. Wszystkie inne operację wykonywane są już dynamicznie na wzór SPA.
+Ze względu na małe rozmiary aplikacji zdecydowałem się jednak nie używać żadnego frameworka.
+Najprostrzym sposobem na wykonanie tego zadania byłoby użycie silnika szablonów
+i renderowanie wszystkiego po stronie serwera jednak takie rozwiązanie za bardzo przypomina mi czasy gdy pracowałem z PHP
+czyli czasy do których nie chciałbym wracać :). Finalnie zdecydowałem się wybrać rozwiązanie pośrednie i przy okazji sprawdzić
+czy problematyczne jest tworzenie aplikacji SPA przy wykorzystaniu natywnych WebComponentów. Jako, że symuluję tutaj działanie 
+frameworka to z serwera przesyłany jest tylko prosty widok. Wszystkie inne operację wykonywane są już dynamicznie na wzór SPA.
 
 
 2. Działanie
 
-Zaimplementowałem minimalny wariant zadania oraz możliwość dodawania zgłoszeń.
+Zaimplementowałem minimalny wariant zadania wraz z dodatkową funkcją dodawania zgłoszeń.
 Po uruchomieniu aplikacji poprzez "npm run start" a następnie wejśćiu na "http://localhost:3000" automatycznie zostanie
 zaczytana z bazy danych lista testowo dodanych zgłoszeń. Aby dodać nowe zgłoszenie należy użyć przycisku "+"
 w prawym dolnym rogu. Aby zmienić status zgłoszenia należy kliknąć na etykietę pokazującą aktualny status zgłoszenia.

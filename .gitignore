@@ -1,5 +1,5 @@
 node_modules
 .idea
 dist/**/*
-config
+# config  Commented for review purposes
 debug.log
