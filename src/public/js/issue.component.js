@@ -65,8 +65,8 @@ template.innerHTML = `
 </div>
 `;
 
-class Issue extends HTMLElement {
-    _statusMap = new Map([['0', 'Open'], ['1', 'Pending'], ['2', 'Close']]);
+class IssueComponent extends HTMLElement {
+    _statusMap = new Map([['0', 'Open'], ['1', 'Pending'], ['2', 'Closed']]);
     _statusClassMap = new Map([
         ['0', 'issue-status-open'], ['1', 'issue-status-pending'], ['2', 'issue-status-close']
     ]);
@@ -78,10 +78,11 @@ class Issue extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['id'];
+        return ['id', 'status'];
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
+        this.updateStatus();
     }
 
     connectedCallback() {
@@ -92,12 +93,16 @@ class Issue extends HTMLElement {
     renderIssue() {
         const header = this._shadowRoot.querySelector('.issue-header-content');
         const description = this._shadowRoot.querySelector('.issue-content');
-        const status = this._shadowRoot.querySelector('.issue-status-button');
-        const statusAttr = this.getAttribute('status');
-        status.classList.add(this._statusClassMap.get(statusAttr));
-        status.textContent = this._statusMap.get(statusAttr);
         header.textContent = this.getAttribute('title');
         description.textContent = this.getAttribute('description');
+    }
+
+    updateStatus() {
+        const status = this._shadowRoot.querySelector('.issue-status-button');
+        const statusAttr = this.getAttribute('status');
+        status.classList.remove(this._statusClassMap.get('0'), this._statusClassMap.get('1'));
+        status.classList.add(this._statusClassMap.get(statusAttr));
+        status.textContent = this._statusMap.get(statusAttr);
     }
 
     attachListeners() {
@@ -117,4 +122,4 @@ class Issue extends HTMLElement {
     }
 }
 
-window.customElements.define('issue-item', Issue);
+window.customElements.define('issue-item', IssueComponent);

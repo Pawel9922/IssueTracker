@@ -91,7 +91,7 @@ modalTemplate.innerHTML = `
     <div class="modal-status"></div>
     <div class="button-wrapper">
         <button data-status="1" class="issue-pending-button modal-button issue-status-button">Pending</button>
-        <button data-status="2" class="issue-close-button modal-button issue-status-button">Close</button>
+        <button data-status="2" class="issue-close-button modal-button issue-status-button">Closed</button>
         <button class="modal-button confirm-button">Confirm</button>
     </div>
   </div>
@@ -101,11 +101,11 @@ modalTemplate.innerHTML = `
 const StatusEnum = {
     Open: '0',
     Pending: '1',
-    Close: '2'
+    Closed: '2'
 };
 
-class IssueEditModal extends HTMLElement {
-    _statusMap = new Map([[StatusEnum.Open, 'Open'], [StatusEnum.Pending, 'Pending'], [StatusEnum.Close, 'Close']]);
+class IssueEditModalComponent extends HTMLElement {
+    _statusMap = new Map([[StatusEnum.Open, 'Open'], [StatusEnum.Pending, 'Pending'], [StatusEnum.Closed, 'Closed']]);
     _editedIssueId = '';
     _issueStatus = '';
 
@@ -148,15 +148,29 @@ class IssueEditModal extends HTMLElement {
         });
     }
 
-    _saveChanges() {
+    async _saveChanges() {
         const url = `http://localhost:3000/issues/${this._editedIssueId}`;
-        fetch(url, {
+        await fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({status: this._issueStatus})
-        })
+        });
+        this.changeIssueStatus();
+        this.style.display = "none";
+    }
+
+    changeIssueStatus() {
+        this.dispatchEvent(new CustomEvent("changeIssueStatus", {
+            bubbles: true,
+            cancelable: false,
+            composed: true,
+            detail: {
+                id: this.getAttribute('id'),
+                status: this._issueStatus
+            }
+        }));
     }
 
     _changeIssueStatus(status) {
@@ -174,17 +188,11 @@ class IssueEditModal extends HTMLElement {
         const status = this.getAttribute('status');
         statusElm.textContent = `Issue status: ${this._statusMap.get(this.getAttribute('status'))}`;
 
-        if (status === StatusEnum.Open) {
-            this._disableModalButton('[data-status="0"]');
-        }
-
         if (status === StatusEnum.Pending) {
-            this._disableModalButton('[data-status="0"]');
             this._disableModalButton('[data-status="1"]');
         }
 
-        if (status === StatusEnum.Close) {
-            this._disableModalButton('[data-status="0"]');
+        if (status === StatusEnum.Closed) {
             this._disableModalButton('[data-status="1"]');
             this._disableModalButton('[data-status="2"]');
         }
@@ -196,4 +204,4 @@ class IssueEditModal extends HTMLElement {
     }
 }
 
-window.customElements.define('issue-edit-modal', IssueEditModal);
+window.customElements.define('issue-edit-modal', IssueEditModalComponent);

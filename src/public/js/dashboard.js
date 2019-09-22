@@ -3,51 +3,78 @@ class Dashboard {
 
     _dashboardRef;
     _issues = [];
+    _issueElmMap = new Map();
 
     constructor() {
         this._dashboardRef = document.querySelector('.dashboard');
-        this.loadIssues();
-        this.renderEditModal();
-        this.attachListeners();
+        this._loadIssues();
+        this._renderEditIssueModal();
+        this._renderAddNewIssueModal();
+        this._attachListeners();
     }
 
-    loadIssues() {
+    _loadIssues() {
         const url = 'http://localhost:3000/issues';
         fetch(url)
             .then(res => res.json())
-            .then(res => {
-                this._issues = res;
-                this.renderIssues(this._issues);
+            .then(issues => {
+                this._renderIssues(issues);
             })
     }
 
-    attachListeners() {
+    _attachListeners() {
         window.addEventListener('openModal', (evt) => {
-            this.openEditModal(evt.detail.id);
+            this._openEditIssueModal(evt.detail.id);
+        });
+
+        window.addEventListener('renderIssue', (evt) => {
+            this._createIssue(evt.detail);
+        });
+
+        window.addEventListener('changeIssueStatus', (evt) => {
+            this._changeIssueStatus(evt.detail);
         })
     }
 
-    renderIssues(issues) {
+    _renderIssues(issues) {
         for (let i = 0; i < issues.length; i++) {
-            const elm = document.createElement('issue-item');
-            elm.setAttribute('title', issues[i].title);
-            elm.setAttribute('description', issues[i].description);
-            elm.setAttribute('status', issues[i].status);
-            elm.setAttribute('id', issues[i]._id);
-            this._dashboardRef.appendChild(elm);
+            this._createIssue(issues[i]);
         }
     }
 
-    renderEditModal() {
+    _createIssue(issue) {
+        const elm = document.createElement('issue-item');
+        elm.setAttribute('title', issue.title);
+        elm.setAttribute('description', issue.description);
+        elm.setAttribute('status', issue.status);
+        elm.setAttribute('id', issue._id);
+        this._issues.push(issue);
+        this._issueElmMap.set(issue._id, elm);
+        this._dashboardRef.appendChild(elm);
+    }
+
+    _renderEditIssueModal() {
         const modal = document.createElement('issue-edit-modal');
         this._dashboardRef.appendChild(modal);
     }
 
-    openEditModal(id) {
+    _renderAddNewIssueModal() {
+        const modal = document.createElement('issue-add-modal');
+        this._dashboardRef.appendChild(modal);
+    }
+
+    _openEditIssueModal(id) {
         const issue = this._issues.find((issue => issue._id === id));
         const modal = document.querySelector('issue-edit-modal');
         modal.setAttribute('status', issue.status);
         modal.setAttribute('id', issue._id);
+    }
+
+    _changeIssueStatus(data) {
+        const issue = this._issues.find((issue => issue._id === data.id));
+        issue.status = data.status;
+        const issueElm = this._issueElmMap.get(data.id);
+        issueElm.setAttribute('status', data.status);
     }
 }
 

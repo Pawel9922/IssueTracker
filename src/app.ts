@@ -31,6 +31,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", mainController.index);
 app.get("/issues", issueController.list);
 app.put("/issues/:id", issueController.update);
+app.post("/issues", issueController.add);
 
 app.listen(app.get("port"), () => {
     logger.debug("App is running at http://localhost:%d in %s mode", app.get("port"), app.get("env"));

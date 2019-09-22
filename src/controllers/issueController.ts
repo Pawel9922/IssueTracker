@@ -1,25 +1,31 @@
 import { Request, Response } from "express";
-import { Issue, IssueType } from "../models/Issue";
-var ObjectId = require('mongodb').ObjectID;
+import { Issue } from "../models/Issue";
+const ObjectId = require('mongodb').ObjectID;
 
-export const list = (req: Request, res: Response) => {
+export const list = async (req: Request, res: Response, next: Function) => {
 
-    let issues: IssueType[] = [];
-    for (let i = 0; i < 10; i++) {
-        issues.push(new Issue({
-            title: 'title' + i,
-            description: 'description' + i,
-            status: 1
-        }))
-    }
-
+    const issues = await Issue.find().catch(err => {
+        next(err);
+    });
     res.json(issues);
 };
 
-export const update = async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response, next: Function) => {
 
     const body = req.body;
     const id = ObjectId(req.params.id);
-    const model = await Issue.findByIdAndUpdate(id, body, {upsert: true});
-    res.json(body);
+    await Issue.findByIdAndUpdate(id, body).catch(err => {
+        next(err);
+    });
+    res.send();
+};
+
+export const add = async (req: Request, res: Response, next: Function) => {
+
+    const body = req.body;
+    const issue = new Issue(body);
+    await issue.save().catch(err => {
+        next(err);
+    });
+    res.json(issue);
 };
