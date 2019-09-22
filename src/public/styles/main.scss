@@ -8,56 +8,13 @@ html, body {
 
 .wrapper {
   display: grid;
-  grid-template-rows: 100px auto 30px;
+  grid-template-rows: auto 1fr auto;
+  height: 100%;
 
   .dashboard {
     display: flex;
     align-items: center;
     flex-direction: column;
-
-    .issue {
-      box-sizing: border-box;
-      min-height: 100px;
-      max-height: 200px;
-      width: 95%;
-      margin: 2px 0;
-      padding: 10px;
-      background-color: lightgreen;
-      border-radius: 5px;
-
-      .issue-header {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        margin: 5px 0 10px 0;
-
-        .issue-header-button {
-          background: transparent;
-          border: none;
-
-          i {
-            color: dodgerblue;
-          }
-
-          &:hover {
-            cursor:pointer;
-          }
-        }
-
-        .issue-header-badge {
-          background-color: dodgerblue;
-          border-radius: 10px;
-          padding: 4px;
-          color: white;
-          font-size: 0.8rem;
-          margin-right: 10px;
-        }
-      }
-
-      .issue-content {
-        font-size: 0.8rem;
-      }
-    }
   }
 
   .header {
@@ -82,11 +39,12 @@ html, body {
     right: 30px;
     padding: 0;
     border-width: 0;
-    background-color: limegreen;
+    background-color: dodgerblue;
     border-radius: 50%;
     width: 40px;
     height: 40px;
     font-size: 1.8rem;
     color: white;
+    outline: none;
   }
 }

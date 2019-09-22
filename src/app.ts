@@ -7,12 +7,13 @@ import {MONGODB_URI} from "./util/configuration";
 import exphbs from "express-handlebars";
 import logger from "./util/logger";
 
-import * as mainController from "./controllers/dashboardController";
+import * as mainController from "./controllers/mainController";
+import * as issueController from "./controllers/issueController";
 
 const app = express();
 
 mongoose.Promise = bluebird;
-
+mongoose.set('useFindAndModify', false);
 mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useCreateIndex: true } ).catch(err => {
     logger.error("MongoDB connection error. Please make sure MongoDB is running. " + err);
 });
@@ -27,7 +28,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", mainController.dashboardController);
+app.get("/", mainController.index);
+app.get("/issues", issueController.list);
+app.put("/issues/:id", issueController.update);
 
 app.listen(app.get("port"), () => {
     logger.debug("App is running at http://localhost:%d in %s mode", app.get("port"), app.get("env"));
