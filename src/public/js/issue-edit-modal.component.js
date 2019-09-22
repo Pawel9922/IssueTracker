@@ -13,17 +13,18 @@ modalTemplate.innerHTML = `
         top: 0;
         width: 100%;
         height: 100%;
-        overflow: auto;
-        background-color: rgb(0,0,0);
         background-color: rgba(0,0,0,0.4);
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
     .modal-content {
         background-color: #fefefe;
-        margin: 100% auto;
         padding: 10px;
         border: 1px solid #888;
         width: 80%;
+        max-width: 800px;
         line-height: 40px;
     }
 
@@ -32,12 +33,6 @@ modalTemplate.innerHTML = `
         float: right;
         font-size: 28px;
         font-weight: bold;
-    }
-
-    .modal-close:hover,
-    .modal-close:focus {
-        color: black;
-        text-decoration: none;
         cursor: pointer;
     }
     
@@ -98,21 +93,14 @@ modalTemplate.innerHTML = `
 </div>
 `;
 
-const StatusEnum = {
-    Open: '0',
-    Pending: '1',
-    Closed: '2'
-};
-
 class IssueEditModalComponent extends HTMLElement {
-    _statusMap = new Map([[StatusEnum.Open, 'Open'], [StatusEnum.Pending, 'Pending'], [StatusEnum.Closed, 'Closed']]);
-    _editedIssueId = '';
-    _issueStatus = '';
+
 
     constructor() {
         super();
         this._shadowRoot = this.attachShadow({ 'mode': 'open' });
         this._shadowRoot.appendChild(modalTemplate.content.cloneNode(true));
+        this._initVariables();
     }
 
     static get observedAttributes() {
@@ -130,6 +118,12 @@ class IssueEditModalComponent extends HTMLElement {
         this._attachListeners();
     }
 
+    _initVariables() {
+        this._statusMap = new Map([[StatusEnum.Open, 'Open'], [StatusEnum.Pending, 'Pending'], [StatusEnum.Closed, 'Closed']]);
+        this._editedIssueId = '';
+        this._issueStatus = '';
+    }
+
     _attachListeners() {
         const closeModalButton = this._shadowRoot.querySelector('.modal-close');
         const statusButtons = this._shadowRoot.querySelectorAll('.issue-status-button');
@@ -139,12 +133,13 @@ class IssueEditModalComponent extends HTMLElement {
         });
         statusButtons.forEach((btn) => {
             btn.addEventListener('click', () => {
-                const status = btn.dataset.status;
-                this._changeIssueStatus(status);
+                this._changeIssueStatus(btn.dataset.status);
             });
         });
-        confirmButton.addEventListener('click', () => {
-            this._saveChanges();
+        confirmButton.addEventListener('click', async () => {
+            await this._saveChanges();
+            this._issueStatusChangedEmit();
+            this.style.display = "none";
         });
     }
 
@@ -157,11 +152,9 @@ class IssueEditModalComponent extends HTMLElement {
             },
             body: JSON.stringify({status: this._issueStatus})
         });
-        this.changeIssueStatus();
-        this.style.display = "none";
     }
 
-    changeIssueStatus() {
+    _issueStatusChangedEmit() {
         this.dispatchEvent(new CustomEvent("changeIssueStatus", {
             bubbles: true,
             cancelable: false,

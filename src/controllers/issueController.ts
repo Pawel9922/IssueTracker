@@ -14,6 +14,7 @@ export const update = async (req: Request, res: Response, next: Function) => {
 
     const body = req.body;
     const id = ObjectId(req.params.id);
+
     await Issue.findByIdAndUpdate(id, body).catch(err => {
         next(err);
     });

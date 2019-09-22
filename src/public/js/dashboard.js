@@ -1,12 +1,14 @@
 
+const StatusEnum = {
+    Open: '0',
+    Pending: '1',
+    Closed: '2'
+};
+
 class Dashboard {
 
-    _dashboardRef;
-    _issues = [];
-    _issueElmMap = new Map();
-
     constructor() {
-        this._dashboardRef = document.querySelector('.dashboard');
+        this._initVariables();
         this._loadIssues();
         this._renderEditIssueModal();
         this._renderAddNewIssueModal();
@@ -20,6 +22,12 @@ class Dashboard {
             .then(issues => {
                 this._renderIssues(issues);
             })
+    }
+
+    _initVariables() {
+        this._dashboardRef = document.querySelector('.dashboard');
+        this._issues = [];
+        this._issueElmMap = new Map();
     }
 
     _attachListeners() {
@@ -37,9 +45,9 @@ class Dashboard {
     }
 
     _renderIssues(issues) {
-        for (let i = 0; i < issues.length; i++) {
-            this._createIssue(issues[i]);
-        }
+        issues.forEach((issue) => {
+            this._createIssue(issue);
+        });
     }
 
     _createIssue(issue) {
@@ -78,4 +86,4 @@ class Dashboard {
     }
 }
 
-const dashboard = new Dashboard();
+new Dashboard();

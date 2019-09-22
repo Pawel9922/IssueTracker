@@ -9,17 +9,17 @@ addNewIssueTemplate.innerHTML = `
         top: 0;
         width: 100%;
         height: 100%;
-        overflow: auto;
-        background-color: rgb(0,0,0);
         background-color: rgba(0,0,0,0.4);
+        justify-content: center;
+        align-items: center;
     }
 
     .modal-content {
         background-color: #fefefe;
-        margin: 70% auto;
         padding: 10px;
         border: 1px solid #888;
         width: 80%;
+        max-width: 800px;
         height: 280px;
         display: flex;
         flex-direction: column;
@@ -27,16 +27,9 @@ addNewIssueTemplate.innerHTML = `
 
     .modal-close {
         color: #aaa;
-        float: right;
         font-size: 28px;
         font-weight: bold;
         align-self: flex-end;
-    }
-
-    .modal-close:hover,
-    .modal-close:focus {
-        color: black;
-        text-decoration: none;
         cursor: pointer;
     }
     
@@ -80,15 +73,15 @@ addNewIssueTemplate.innerHTML = `
     }
     
     label {
-        margin-top: 20px;
-        margin-bottom: 5px;
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
     
-    textarea {
+    .description {
         height: 100px;
     }
     
-    input, textarea {
+    .title, .description {
         border: lightgray 1px solid;
         border-radius: 5px;
     }
@@ -109,17 +102,15 @@ addNewIssueTemplate.innerHTML = `
 
 class IssueAddModalComponent extends HTMLElement {
 
-    modalRef;
-
     constructor() {
         super();
         this._shadowRoot = this.attachShadow({ 'mode': 'open' });
         this._shadowRoot.appendChild(addNewIssueTemplate.content.cloneNode(true));
+        this._modalRef =  this._shadowRoot.querySelector('.issue-add-modal');
     }
 
     connectedCallback() {
         this._attachListeners();
-        this.modalRef =  this._shadowRoot.querySelector('.issue-add-modal');
     }
 
     _attachListeners() {
@@ -127,19 +118,22 @@ class IssueAddModalComponent extends HTMLElement {
         const closeButton = this._shadowRoot.querySelector('.modal-close');
         const confirmButton = this._shadowRoot.querySelector('.confirm-button');
         addButton.addEventListener('click', () => {
-            this.modalRef.style.display = 'block';
+            this._modalRef.style.display = 'flex';
         });
 
         closeButton.addEventListener('click', () => {
-            this.modalRef.style.display = 'none';
+            this._clearInputs();
+            this._modalRef.style.display = 'none';
         });
 
         confirmButton.addEventListener('click', () => {
-            this.saveIssue();
+            this._saveIssue();
+            this._clearInputs();
+            this._modalRef.style.display = 'none';
         });
     }
 
-    saveIssue() {
+    _saveIssue() {
         const title = this._shadowRoot.querySelector('.title').value;
         const description = this._shadowRoot.querySelector('.description').value;
         const url = 'http://localhost:3000/issues';
@@ -155,7 +149,11 @@ class IssueAddModalComponent extends HTMLElement {
          .then(issue => {
              this._renderIssue(issue);
          });
-        this.modalRef.style.display = 'none';
+    }
+
+    _clearInputs() {
+        this._shadowRoot.querySelector('.title').value = '';
+        this._shadowRoot.querySelector('.description').value = '';
     }
 
     _renderIssue(issue) {

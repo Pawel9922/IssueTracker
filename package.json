@@ -6,7 +6,7 @@
     "type": "git",
     "url": "https://github.com/Pawel9922/IssueTracker.git"
   },
-  "author": "Pawel Marszalec",
+  "author": "Pawel",
   "license": "MIT",
   "scripts": {
     "start": "npm run build && node dist/app.js",
@@ -42,7 +42,6 @@
     "copyfiles": "^2.1.1",
     "node-sass": "^4.12.0",
     "nodemon": "^1.19.1",
-    "typescript": "^3.5.2",
-    "uglify-js": "^3.6.0"
+    "typescript": "^3.5.2"
   }
 }

@@ -8,7 +8,6 @@ template.innerHTML = `
     .issue {
         box-sizing: border-box;
         min-height: 100px;
-        max-height: 200px;
         margin: 2px 0;
         padding: 10px;
         background-color: lightgreen;
@@ -21,6 +20,10 @@ template.innerHTML = `
         justify-content: space-between;
         width: 100%;
         margin: 5px 0 10px 0;
+    }
+    
+    .issue-header-content {
+        width: 90%;
     }
 
     .issue-status-button {
@@ -37,8 +40,10 @@ template.innerHTML = `
         outline: none;
     }
 
-    .issue-content {
+    .description {
         font-size: 0.8rem;
+        overflow: hidden;
+        width: 90%;
     }
     
     .issue-status-close {
@@ -53,28 +58,30 @@ template.innerHTML = `
         background-color: mediumslateblue;
     }
     
+    .overflow-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
 </style>
 <div class="issue">
     <div class="issue-header">
-        <div class="issue-header-content"></div>
+        <div class="issue-header-content overflow-text"></div>
         <button class="issue-status-button"></button>
     </div>
-    <div class="issue-content">
-        Issue
-    </div>
+    <div class="description"></div>
 </div>
 `;
 
 class IssueComponent extends HTMLElement {
-    _statusMap = new Map([['0', 'Open'], ['1', 'Pending'], ['2', 'Closed']]);
-    _statusClassMap = new Map([
-        ['0', 'issue-status-open'], ['1', 'issue-status-pending'], ['2', 'issue-status-close']
-    ]);
+
 
     constructor() {
         super();
         this._shadowRoot = this.attachShadow({ 'mode': 'open' });
         this._shadowRoot.appendChild(template.content.cloneNode(true));
+        this._initVariables();
     }
 
     static get observedAttributes() {
@@ -82,37 +89,50 @@ class IssueComponent extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        this.updateStatus();
+        this._updateStatus();
     }
 
     connectedCallback() {
-        this.renderIssue();
-        this.attachListeners();
+        this._renderIssue();
+        this._attachListeners();
     }
 
-    renderIssue() {
+    _initVariables() {
+        this._statusMap = new Map([[StatusEnum.Open, 'Open'], [StatusEnum.Pending, 'Pending'], [StatusEnum.Closed, 'Closed']]);
+        this._statusClassMap = new Map([
+            [StatusEnum.Open, 'issue-status-open'], [StatusEnum.Pending, 'issue-status-pending'], [StatusEnum.Closed, 'issue-status-close']
+        ]);
+    }
+
+    _renderIssue() {
         const header = this._shadowRoot.querySelector('.issue-header-content');
-        const description = this._shadowRoot.querySelector('.issue-content');
+        const description = this._shadowRoot.querySelector('.description');
         header.textContent = this.getAttribute('title');
         description.textContent = this.getAttribute('description');
     }
 
-    updateStatus() {
+    _updateStatus() {
         const status = this._shadowRoot.querySelector('.issue-status-button');
         const statusAttr = this.getAttribute('status');
-        status.classList.remove(this._statusClassMap.get('0'), this._statusClassMap.get('1'));
+        status.classList.remove(this._statusClassMap.get(StatusEnum.Open), this._statusClassMap.get(StatusEnum.Pending));
         status.classList.add(this._statusClassMap.get(statusAttr));
         status.textContent = this._statusMap.get(statusAttr);
+
+        statusAttr !== StatusEnum.Closed
+            ? status.style.cursor = 'pointer'
+            : status.style.cursor = 'default';
     }
 
-    attachListeners() {
+    _attachListeners() {
         const openModalButton = this._shadowRoot.querySelector('.issue-status-button');
         openModalButton.addEventListener('click', () => {
-            this.openEditModal();
+            if (this.getAttribute('status') !== StatusEnum.Closed) {
+                this._openEditModal();
+            }
         });
     }
 
-    openEditModal() {
+    _openEditModal() {
         this.dispatchEvent(new CustomEvent("openModal", {
             bubbles: true,
             cancelable: false,
